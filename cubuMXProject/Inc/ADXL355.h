@@ -116,7 +116,7 @@ extern volatile uint32_t ui32SensorY;
 extern volatile uint32_t ui32SensorZ;
 extern volatile uint32_t ui32SensorT;
 
-extern volatile uint32_t ui32timer_counter;
+// extern volatile uint32_t ui32timer_counter;
 
 
 /*************************** Functions prototypes *****************************/

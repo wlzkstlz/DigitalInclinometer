@@ -48,13 +48,13 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /***************************** Include Files **********************************/
 #include <stdio.h>
 
-#include <ADuCM360.h>
-#include <DioLib.h>
+// #include <ADuCM360.h>
+// #include <DioLib.h>
 
 #include "ADXL355.h"
 #include "Communication.h"
-#include "Timer.h"
-
+// #include "Timer.h"
+#include "gpio.h"
 
 /****************************** Global Data ***********************************/
 
@@ -67,7 +67,7 @@ uint32_t volatile ui32SensorY;
 uint32_t volatile ui32SensorZ;
 uint32_t volatile ui32SensorT;
 
-volatile uint32_t ui32timer_counter = 0;
+// volatile uint32_t ui32timer_counter = 0;
 
 
 /************************* Global scope functions *****************************/
@@ -80,17 +80,17 @@ volatile uint32_t ui32timer_counter = 0;
 **/
 void ADXL355_Init(void)
 {
-   DioPulPin(CSACC_PORT, CSACC_PIN_NUMBER, 0);          /* Disable the internal pull up on CSACC pin */
-   DioOenPin(CSACC_PORT, CSACC_PIN_NUMBER, 1);          /* Set CSACC pin as output */
+   // DioPulPin(CSACC_PORT, CSACC_PIN_NUMBER, 0);          /* Disable the internal pull up on CSACC pin */
+   // DioOenPin(CSACC_PORT, CSACC_PIN_NUMBER, 1);          /* Set CSACC pin as output */
 
-   DioPulPin(INT1ACC_PORT, INT1ACC_PIN_NUMBER, 0);         /* Disable the internal pull up on INT1ACC pin */
-   DioOenPin(INT1ACC_PORT, INT1ACC_PIN_NUMBER, 0);         /* Set INT1ACC pin as input */
+   // DioPulPin(INT1ACC_PORT, INT1ACC_PIN_NUMBER, 0);         /* Disable the internal pull up on INT1ACC pin */
+   // DioOenPin(INT1ACC_PORT, INT1ACC_PIN_NUMBER, 0);         /* Set INT1ACC pin as input */
 
-   DioPulPin(INT2ACC_PORT, INT2ACC_PIN_NUMBER, 0);         /* Disable the internal pull up on INT2ACC pin */
-   DioOenPin(INT2ACC_PORT, INT2ACC_PIN_NUMBER, 0);         /* Set INT2ACC pin as input */
+   // DioPulPin(INT2ACC_PORT, INT2ACC_PIN_NUMBER, 0);         /* Disable the internal pull up on INT2ACC pin */
+   // DioOenPin(INT2ACC_PORT, INT2ACC_PIN_NUMBER, 0);         /* Set INT2ACC pin as input */
 
-   DioPulPin(DATARDYACC_PORT, DATARDYACC_PIN_NUMBER, 0);         /* Disable the internal pull up on INT2ACC pin */
-   DioOenPin(DATARDYACC_PORT, DATARDYACC_PIN_NUMBER, 0);         /* Set INT2ACC pin as input */
+   // DioPulPin(DATARDYACC_PORT, DATARDYACC_PIN_NUMBER, 0);         /* Disable the internal pull up on INT2ACC pin */
+   // DioOenPin(DATARDYACC_PORT, DATARDYACC_PIN_NUMBER, 0);         /* Set INT2ACC pin as input */
 
    /* Quick verification test for boards */
 //   uint32_t volatile ui32test = SPI_Read(DEVID_AD, SPI_READ_ONE_REG);                  /* Read the ID register */

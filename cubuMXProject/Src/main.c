@@ -26,7 +26,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "ADXL355.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
