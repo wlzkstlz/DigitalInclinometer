@@ -3,8 +3,8 @@
  * Auto generated Run-Time-Environment Component Configuration File
  *      *** Do not modify ! ***
  *
- * Project: 'DigitalInclinometer' 
- * Target:  'DigitalInclinometer' 
+ * Project: 'cubuMXProject' 
+ * Target:  'cubuMXProject' 
  */
 
 #ifndef RTE_COMPONENTS_H

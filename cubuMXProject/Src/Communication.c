@@ -90,7 +90,7 @@ void SPI_Write(uint8_t ui8address, uint8_t ui8Data, uint8_t ui8Data2, enWriteDat
 
       dat[0] = ui8writeAddress;
       dat[1] = ui8Data;
-      HAL_SPI_Transmit(&hspi2, dat, 2, 500);
+      HAL_SPI_Transmit(&hspi1, dat, 2, 500);
 
       // while ((SpiSta(pADI_SPI0) & SPI0STA_RXFSTA_TWOBYTES) != SPI0STA_RXFSTA_TWOBYTES)
       //    ; /* Wait until 3 bytes are received */
@@ -112,7 +112,7 @@ void SPI_Write(uint8_t ui8address, uint8_t ui8Data, uint8_t ui8Data2, enWriteDat
       dat[0] = ui8writeAddress;
       dat[1] = ui8Data;
       dat[2] = ui8Data2;
-      HAL_SPI_Transmit(&hspi2, dat, 3, 500);
+      HAL_SPI_Transmit(&hspi1, dat, 3, 500);
 
       // while ((SpiSta(pADI_SPI0) & SPI0STA_RXFSTA_THREEBYTES) != SPI0STA_RXFSTA_THREEBYTES)
       //    ; /* Wait until 3 bytes are received */
