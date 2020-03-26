@@ -52,7 +52,7 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void send_debug_info(int32_t x,int32_t y,int32_t z);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -92,7 +92,7 @@ int main(void)
   MX_SPI2_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  ADXL355_Start_Sensor();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -100,7 +100,9 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+    HAL_Delay(100);
+    ADXL355_Data_Scan();
+    send_debug_info(i32SensorX,i32SensorY,i32SensorZ);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -144,6 +146,25 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void send_debug_info(int32_t x,int32_t y,int32_t z)
+{
+  const size_t data_length = 1 + 3*sizeof(int32_t) + 2;
+  uint8_t data[data_length];
+  data[0] = 0xa5;
+  data[data_length - 2] = 0;
+  data[data_length - 1] = 0x5a;
+
+  memcpy(data + 1, (int32_t *)(&x), sizeof(int32_t));
+  memcpy(data + 1 + sizeof(int32_t), (int32_t *)(&y), sizeof(int32_t));
+  memcpy(data + 1 + sizeof(int32_t) + sizeof(int32_t), (int32_t *)(&z), sizeof(int32_t));
+
+  for (size_t i = 1; i < data_length - 2; i++)
+  {
+    data[data_length - 2] += data[i];
+  }
+
+  HAL_UART_Transmit(&huart1, data, data_length, 0xFFFF);
+}
 
 /* USER CODE END 4 */
 

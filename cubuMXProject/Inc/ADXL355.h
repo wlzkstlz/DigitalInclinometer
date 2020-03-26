@@ -48,6 +48,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef ADXL355_H_
 #define ADXL355_H_
 
+#include "main.h"
 /********************************* Definitions ********************************/
 
 /* ADXL355 registers addresses */

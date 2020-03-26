@@ -48,6 +48,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _COMMUNICATION_H_
 #define _COMMUNICATION_H_
 
+#include "main.h"
 /* -------------------------------------------------------------------------*/
 
 /*******************************************************************************

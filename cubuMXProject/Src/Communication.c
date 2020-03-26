@@ -140,17 +140,17 @@ uint32_t SPI_Read(uint8_t ui8address, enRegsNum enRegs)
 
    if (enRegs == SPI_READ_ONE_REG)
    {
-      HAL_SPI_TransmitReceive(&hspi1, dat, dat, 2, 500);
+      HAL_SPI_TransmitReceive(&hspi2, dat, dat, 2, 500);
       ui32Result=dat[1];
    }
    if (enRegs == SPI_READ_TWO_REG)
    { /* Only used for Temp & X,Y,Z offset and threshold registers*/
-      HAL_SPI_TransmitReceive(&hspi1, dat, dat, 3, 500);
+      HAL_SPI_TransmitReceive(&hspi2, dat, dat, 3, 500);
       ui32Result = ((dat[1] << 8) | dat[2]); /* Set read result*/
    }
    if (enRegs == SPI_READ_THREE_REG)
    { /* Only used for X,Y,Z axis data registers*/
-      HAL_SPI_TransmitReceive(&hspi1, dat, dat, 4, 500);
+      HAL_SPI_TransmitReceive(&hspi2, dat, dat, 4, 500);
       ui32Result = ((dat[1] << 16) | (dat[2] << 8) | dat[3]); /* Set read result*/
    }
 
