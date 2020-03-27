@@ -27,6 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ADXL355.h"
+#include <math.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,13 +47,16 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+#define M_PI 3.1415926
+double gPitch = 0;
+double gRoll = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-void send_debug_info(int32_t x,int32_t y,int32_t z);
+void send_debug_info(float x, float y, float z);
+void send_debug_info2(float pitch, float roll, float temperature);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -67,9 +71,8 @@ void send_debug_info(int32_t x,int32_t y,int32_t z);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-//春天的道路是泥泞的。。。
+  //春天的道路是泥泞的。。。
   /* USER CODE END 1 */
-  
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -102,7 +105,12 @@ int main(void)
     /* USER CODE END WHILE */
     HAL_Delay(100);
     ADXL355_Data_Scan();
-    send_debug_info(i32SensorX,i32SensorY,i32SensorZ);
+    double g = sqrt(dAccX * dAccX + dAccY * dAccY + dAccZ * dAccZ);
+    gPitch = asin(-dAccX / g);
+    gRoll = atan(dAccY / dAccZ);
+
+    //send_debug_info(dAccX, dAccY, dAccZ);
+    send_debug_info2(gPitch * 180.0 / M_PI, gRoll * 180.0 / M_PI, dTemperature);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -132,8 +140,7 @@ void SystemClock_Config(void)
   }
   /** Initializes the CPU, AHB and APB busses clocks 
   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -146,17 +153,17 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void send_debug_info(int32_t x,int32_t y,int32_t z)
+void send_debug_info(float x, float y, float z)
 {
-  const size_t data_length = 1 + 3*sizeof(int32_t) + 2;
+  const size_t data_length = 1 + 3 * sizeof(float) + 2;
   uint8_t data[data_length];
   data[0] = 0xa5;
   data[data_length - 2] = 0;
   data[data_length - 1] = 0x5a;
 
-  memcpy(data + 1, (int32_t *)(&x), sizeof(int32_t));
-  memcpy(data + 1 + sizeof(int32_t), (int32_t *)(&y), sizeof(int32_t));
-  memcpy(data + 1 + sizeof(int32_t) + sizeof(int32_t), (int32_t *)(&z), sizeof(int32_t));
+  memcpy(data + 1, (float *)(&x), sizeof(float));
+  memcpy(data + 1 + sizeof(float), (float *)(&y), sizeof(float));
+  memcpy(data + 1 + sizeof(float) + sizeof(float), (float *)(&z), sizeof(float));
 
   for (size_t i = 1; i < data_length - 2; i++)
   {
@@ -165,7 +172,25 @@ void send_debug_info(int32_t x,int32_t y,int32_t z)
 
   HAL_UART_Transmit(&huart1, data, data_length, 0xFFFF);
 }
+void send_debug_info2(float pitch, float roll, float temperature)
+{
+  const size_t data_length = 1 + 3 * sizeof(float) + 2;
+  uint8_t data[data_length];
+  data[0] = 0xa5;
+  data[data_length - 2] = 0;
+  data[data_length - 1] = 0x5a;
 
+  memcpy(data + 1, (float *)(&pitch), sizeof(float));
+  memcpy(data + 1 + sizeof(float), (float *)(&roll), sizeof(float));
+  memcpy(data + 1 + 2 * sizeof(float), (float *)(&temperature), sizeof(float));
+
+  for (size_t i = 1; i < data_length - 2; i++)
+  {
+    data[data_length - 2] += data[i];
+  }
+
+  HAL_UART_Transmit(&huart1, data, data_length, 0xFFFF);
+}
 /* USER CODE END 4 */
 
 /**
@@ -180,7 +205,7 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -189,7 +214,7 @@ void Error_Handler(void)
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)
-{ 
+{
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */

@@ -1,6 +1,6 @@
 Dependencies for Project 'DigitalInclinometer', Target 'DigitalInclinometer': (DO NOT MODIFY !)
 F (startup_stm32f103xg.s)(0x5E7B4470)(--cpu Cortex-M3 --pd "__EVAL SETA 1" -g --apcs=interwork --pd "__MICROLIB SETA 1"-I C:\Users\stephen\Documents\GitProjects\DigitalInclinometer\cubuMXProject\MDK-ARM\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include--pd "__UVISION_VERSION SETA 514" --pd "_RTE_ SETA 1" --pd "STM32F10X_XL SETA 1"--list startup_stm32f103xg.lst --xref -o digitalinclinometer\startup_stm32f103xg.o --depend digitalinclinometer\startup_stm32f103xg.d)
-F (../Src/main.c)(0x5E7BFF7F)(--c99 -c --cpu Cortex-M3 -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I../Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include-I C:\Users\stephen\Documents\GitProjects\DigitalInclinometer\cubuMXProject\MDK-ARM\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-D__UVISION_VERSION="514" -D_RTE_ -DSTM32F10X_XL -DUSE_HAL_DRIVER -DSTM32F103xG-o digitalinclinometer\main.o --omf_browse digitalinclinometer\main.crf --depend digitalinclinometer\main.d)
+F (../Src/main.c)(0x5E7E0CA4)(--c99 -c --cpu Cortex-M3 -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I../Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include-I C:\Users\stephen\Documents\GitProjects\DigitalInclinometer\cubuMXProject\MDK-ARM\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-D__UVISION_VERSION="514" -D_RTE_ -DSTM32F10X_XL -DUSE_HAL_DRIVER -DSTM32F103xG-o digitalinclinometer\main.o --omf_browse digitalinclinometer\main.crf --depend digitalinclinometer\main.d)
 I (../Inc/main.h)(0x5E7B4470)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h)(0x5DE36D31)
 I (../Inc/stm32f1xx_hal_conf.h)(0x5E78B919)
@@ -31,7 +31,8 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x5DE36D31)
 I (../Inc/spi.h)(0x5E7B4470)
 I (../Inc/usart.h)(0x5E78B919)
 I (../Inc/gpio.h)(0x5E78B917)
-I (../Inc/ADXL355.h)(0x5E7BFCF2)
+I (../Inc/ADXL355.h)(0x5E7E0BF9)
+I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x5475F2FE)
 F (../Src/gpio.c)(0x5E7B4470)(--c99 -c --cpu Cortex-M3 -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I../Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include-I C:\Users\stephen\Documents\GitProjects\DigitalInclinometer\cubuMXProject\MDK-ARM\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-D__UVISION_VERSION="514" -D_RTE_ -DSTM32F10X_XL -DUSE_HAL_DRIVER -DSTM32F103xG-o digitalinclinometer\gpio.o --omf_browse digitalinclinometer\gpio.crf --depend digitalinclinometer\gpio.d)
 I (../Inc/gpio.h)(0x5E78B917)
 I (../Inc/main.h)(0x5E7B4470)
@@ -205,9 +206,9 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h)(0x5DE36D31)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x5DE36D31)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h)(0x5DE36D31)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x5DE36D31)
-F (..\Src\ADXL355.c)(0x5E760E7D)(--c99 -c --cpu Cortex-M3 -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I../Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include-I C:\Users\stephen\Documents\GitProjects\DigitalInclinometer\cubuMXProject\MDK-ARM\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-D__UVISION_VERSION="514" -D_RTE_ -DSTM32F10X_XL -DUSE_HAL_DRIVER -DSTM32F103xG-o digitalinclinometer\adxl355.o --omf_browse digitalinclinometer\adxl355.crf --depend digitalinclinometer\adxl355.d)
+F (..\Src\ADXL355.c)(0x5E7E0C3C)(--c99 -c --cpu Cortex-M3 -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I../Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include-I C:\Users\stephen\Documents\GitProjects\DigitalInclinometer\cubuMXProject\MDK-ARM\RTE-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-D__UVISION_VERSION="514" -D_RTE_ -DSTM32F10X_XL -DUSE_HAL_DRIVER -DSTM32F103xG-o digitalinclinometer\adxl355.o --omf_browse digitalinclinometer\adxl355.crf --depend digitalinclinometer\adxl355.d)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
-I (../Inc/ADXL355.h)(0x5E7BFCF2)
+I (../Inc/ADXL355.h)(0x5E7E0BF9)
 I (../Inc/main.h)(0x5E7B4470)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h)(0x5DE36D31)
 I (../Inc/stm32f1xx_hal_conf.h)(0x5E78B919)

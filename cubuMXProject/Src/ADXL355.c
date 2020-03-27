@@ -67,8 +67,13 @@ uint32_t volatile ui32SensorY;
 uint32_t volatile ui32SensorZ;
 uint32_t volatile ui32SensorT;
 
-// volatile uint32_t ui32timer_counter = 0;
+volatile double dAccX;
+volatile double dAccY;
+volatile double dAccZ;
 
+volatile float dTemperature;
+
+// volatile uint32_t ui32timer_counter = 0;
 
 /************************* Global scope functions *****************************/
 
@@ -93,11 +98,10 @@ void ADXL355_Init(void)
    // DioOenPin(DATARDYACC_PORT, DATARDYACC_PIN_NUMBER, 0);         /* Set INT2ACC pin as input */
 
    /* Quick verification test for boards */
-//   uint32_t volatile ui32test = SPI_Read(DEVID_AD, SPI_READ_ONE_REG);                  /* Read the ID register */
-//   uint32_t volatile ui32test2 = SPI_Read(DEVID_MST, SPI_READ_ONE_REG);                  /* Read the ID register */
-//   uint32_t volatile ui32test3 = SPI_Read(PARTID, SPI_READ_ONE_REG);                  /* Read the ID register */
-//   uint32_t volatile ui32test4 = SPI_Read(REVID, SPI_READ_ONE_REG);                 /* Read the ID register */
-
+   //   uint32_t volatile ui32test = SPI_Read(DEVID_AD, SPI_READ_ONE_REG);                  /* Read the ID register */
+   //   uint32_t volatile ui32test2 = SPI_Read(DEVID_MST, SPI_READ_ONE_REG);                  /* Read the ID register */
+   //   uint32_t volatile ui32test3 = SPI_Read(PARTID, SPI_READ_ONE_REG);                  /* Read the ID register */
+   //   uint32_t volatile ui32test4 = SPI_Read(REVID, SPI_READ_ONE_REG);                 /* Read the ID register */
 }
 
 /**
@@ -110,13 +114,12 @@ void ADXL355_Start_Sensor(void)
 {
    uint8_t ui8temp;
 
-   ui8temp = (uint8_t)SPI_Read(POWER_CTL, SPI_READ_ONE_REG);       /* Read POWER_CTL register, before modifying it */
+   ui8temp = (uint8_t)SPI_Read(POWER_CTL, SPI_READ_ONE_REG); /* Read POWER_CTL register, before modifying it */
 
-   ui8temp = ui8temp & 0xFE;                                          /* Set measurement bit in POWER_CTL register */
+   ui8temp = ui8temp & 0xFE; /* Set measurement bit in POWER_CTL register */
 
-   SPI_Write(POWER_CTL, ui8temp, 0x00, SPI_WRITE_ONE_REG);                    /* Write the new value to POWER_CTL register */
+   SPI_Write(POWER_CTL, ui8temp, 0x00, SPI_WRITE_ONE_REG); /* Write the new value to POWER_CTL register */
 }
-
 
 /**
    @brief Puts the accelerometer into standby mode.
@@ -128,12 +131,11 @@ void ADXL355_Stop_Sensor(void)
 {
    uint8_t ui8temp;
 
-   ui8temp = (uint8_t)SPI_Read(POWER_CTL, SPI_READ_ONE_REG);        /*Read POWER_CTL register, before modifying it */
+   ui8temp = (uint8_t)SPI_Read(POWER_CTL, SPI_READ_ONE_REG); /*Read POWER_CTL register, before modifying it */
 
-   ui8temp = ui8temp | 0x01;                                      /* Clear measurement bit in POWER_CTL register */
+   ui8temp = ui8temp | 0x01; /* Clear measurement bit in POWER_CTL register */
 
-   SPI_Write(POWER_CTL, ui8temp, 0x00, SPI_WRITE_ONE_REG);                 /* Write the new value to POWER_CTL register */
-
+   SPI_Write(POWER_CTL, ui8temp, 0x00, SPI_WRITE_ONE_REG); /* Write the new value to POWER_CTL register */
 }
 
 /**
@@ -145,16 +147,16 @@ void ADXL355_Stop_Sensor(void)
 void ADXL355_Data_Scan(void)
 {
 
-      ui32SensorX = SPI_Read(XDATA3, SPI_READ_THREE_REG);
-      ui32SensorY = SPI_Read(YDATA3, SPI_READ_THREE_REG);
-      ui32SensorZ = SPI_Read(ZDATA3, SPI_READ_THREE_REG);
-      ui32SensorT = SPI_Read(TEMP2, SPI_READ_TWO_REG);
-      i32SensorX = ADXL355_Acceleration_Data_Conversion(ui32SensorX);
-      i32SensorY = ADXL355_Acceleration_Data_Conversion(ui32SensorY);
-      i32SensorZ = ADXL355_Acceleration_Data_Conversion(ui32SensorZ);
+   ui32SensorX = SPI_Read(XDATA3, SPI_READ_THREE_REG);
+   ui32SensorY = SPI_Read(YDATA3, SPI_READ_THREE_REG);
+   ui32SensorZ = SPI_Read(ZDATA3, SPI_READ_THREE_REG);
+   ui32SensorT = SPI_Read(TEMP2, SPI_READ_TWO_REG);
+   dAccX = ADXL355_Acceleration_Data_Conversion(ui32SensorX);
+   dAccY = ADXL355_Acceleration_Data_Conversion(ui32SensorY);
+   dAccZ = ADXL355_Acceleration_Data_Conversion(ui32SensorZ);
 
+   dTemperature = 25.0f + (ui32SensorT - ADXL355_TEMP_BIAS) / ADXL355_TEMP_SLOPE;
 }
-
 
 /**
    @brief Convert the two's complement data in X,Y,Z registers to signed integers
@@ -164,21 +166,23 @@ void ADXL355_Data_Scan(void)
    @return int32_t - signed integer data
 
 **/
-int32_t ADXL355_Acceleration_Data_Conversion (uint32_t ui32SensorData)
+double ADXL355_Acceleration_Data_Conversion(uint32_t ui32SensorData)
 {
    int32_t volatile i32Conversion = 0;
 
-   ui32SensorData = (ui32SensorData  >> 4);
+   ui32SensorData = (ui32SensorData >> 4);
    ui32SensorData = (ui32SensorData & 0x000FFFFF);
 
-   if((ui32SensorData & 0x00080000)  == 0x00080000){
+   if ((ui32SensorData & 0x00080000) == 0x00080000)
+   {
 
-         i32Conversion = (ui32SensorData | 0xFFF00000);
-
+      i32Conversion = (ui32SensorData | 0xFFF00000);
    }
-   else{
-         i32Conversion = ui32SensorData;
+   else
+   {
+      i32Conversion = ui32SensorData;
    }
 
-   return i32Conversion;
+   double acc_value = (double)i32Conversion / ADXL_ACC_SENSITY;
+   return acc_value;
 }
