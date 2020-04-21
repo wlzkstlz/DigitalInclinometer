@@ -116,11 +116,11 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   ADXL355_Start_Sensor();
-
   float acc[3] = {0, 0, 0};
-  const int avg_times = 100;
+  const int avg_times = 10;
   for (int i = 0; i < avg_times; i++)
   {
+    HAL_Delay(100);
     ADXL355_Data_Scan();
     acc[0] += i32SensorX / ADXL_SENSITIVITY;
     acc[1] += i32SensorY / ADXL_SENSITIVITY;
@@ -148,9 +148,9 @@ int main(void)
     else if (i % 100 == 0)
       HAL_GPIO_WritePin(GPIOA, LED1_Pin, GPIO_PIN_RESET);
 
-    ADXL355_Data_Scan();
-    EKFPredict();
-    EKFMeasure(i32SensorX / ADXL_SENSITIVITY, i32SensorY / ADXL_SENSITIVITY, i32SensorZ / ADXL_SENSITIVITY);
+    // ADXL355_Data_Scan();
+    // EKFPredict();
+    // EKFMeasure(i32SensorX / ADXL_SENSITIVITY, i32SensorY / ADXL_SENSITIVITY, i32SensorZ / ADXL_SENSITIVITY);
     send_debug_info(gX_hat[0], gX_hat[1], gErr[0][0], gErr[1][0], gErr[2][0]);
 
     /* USER CODE END WHILE */
@@ -197,7 +197,15 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if (GPIO_Pin == IMU_DRDYP_Pin)
+  {
+    ADXL355_Data_Scan();
+    EKFPredict();
+    EKFMeasure(i32SensorX / ADXL_SENSITIVITY, i32SensorY / ADXL_SENSITIVITY, i32SensorZ / ADXL_SENSITIVITY);
+  }
+}
 /* USER CODE END 4 */
 
 /**

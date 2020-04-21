@@ -15,7 +15,7 @@ float gH[3][2];
 const float gR[2][2] = {{DEG2RAD(0.5) * DEG2RAD(0.5), 0},
                         {0, DEG2RAD(0.5) * DEG2RAD(0.5)}};
 
-#define _IMU_ACC_VAR_ ((7.9e-5 * 9.8) * (7.9e-5 * 9.8))
+#define _IMU_ACC_VAR_ ((7.9e-5 * 9.8) * (7.9e-5 * 9.8)) // at 10Hz
 const float gQ[3][3] = {{_IMU_ACC_VAR_, 0, 0},
                         {0, _IMU_ACC_VAR_, 0},
                         {0, 0, _IMU_ACC_VAR_}}; //IMU parameter
@@ -24,14 +24,18 @@ float gK[2][3]; //kalman Gain
 
 float gErr[3][1];
 
+unsigned char gbEKFInited = 0;
 void EKFInit(const float acc[3])
 {
     gG = sqrt(acc[0] * acc[0] + acc[1] * acc[1] + acc[2] * acc[2]);
     CalAngelFromAcc(acc, gX_hat);
+    gbEKFInited = 1;
 }
 
 void EKFPredict(void)
 {
+    if (0 == gbEKFInited)
+        return;
     AddMetrix(&gP_hat[0][0], &gR[0][0], &gP_bar[0][0], 2, 2);
 
     for (int i = 0; i < 2; i++)
@@ -40,6 +44,8 @@ void EKFPredict(void)
 
 void EKFMeasure(const float ax, const float ay, const float az)
 {
+    if (0 == gbEKFInited)
+        return;
     float acc_measure[3];
     acc_measure[0] = ax;
     acc_measure[1] = ay;
