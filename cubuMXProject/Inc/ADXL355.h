@@ -117,6 +117,10 @@ extern volatile uint32_t ui32SensorY;
 extern volatile uint32_t ui32SensorZ;
 extern volatile uint32_t ui32SensorT;
 
+// extern volatile float f32SensorX;
+// extern volatile float f32SensorY;
+// extern volatile float f32SensorZ;
+
 // extern volatile uint32_t ui32timer_counter;
 
 

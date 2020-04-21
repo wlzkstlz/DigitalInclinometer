@@ -27,6 +27,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ADXL355.h"
+#include "EKF.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -113,6 +114,23 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   ADXL355_Start_Sensor();
+
+  float acc[3] = {0, 0, 0};
+  const int avg_times = 100;
+  for (int i = 0; i < avg_times; i++)
+  {
+    ADXL355_Data_Scan();
+    acc[0] += i32SensorX;
+    acc[1] += i32SensorY;
+    acc[2] += i32SensorZ;
+  }
+
+  for (int i = 0; i < 3; i++)
+  {
+    acc[i]=acc[i]/avg_times;
+  }
+  EKFInit(acc);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -122,14 +140,15 @@ int main(void)
   while (1)
   {
     i++;
-    HAL_GPIO_WritePin(GPIOA, LED1_Pin, GPIO_PIN_SET);
-    HAL_Delay(50);
-    HAL_GPIO_WritePin(GPIOA, LED1_Pin, GPIO_PIN_RESET);
-    HAL_Delay(50);
-    send_debug_info_pwm_w(i32SensorX, i32SensorY, i32SensorZ);
+    HAL_Delay(1);
+    if (i % 100 == 50)
+      HAL_GPIO_WritePin(GPIOA, LED1_Pin, GPIO_PIN_SET);
+    else if (i % 100 == 0)
+      HAL_GPIO_WritePin(GPIOA, LED1_Pin, GPIO_PIN_RESET);
 
     ADXL355_Data_Scan();
-    //HAL_Delay(100);
+    EKFPredict();
+    EKFMeasure(i32SensorX, i32SensorY, i32SensorZ);
 
     /* USER CODE END WHILE */
 
