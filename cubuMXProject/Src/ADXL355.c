@@ -106,9 +106,11 @@ void ADXL355_Init(void)
 **/
 void ADXL355_Start_Sensor(void)
 {
-   uint8_t ui8temp= (uint8_t)SPI_Read(POWER_CTL, SPI_READ_ONE_REG); /* Read POWER_CTL register, before modifying it */
-   ui8temp = ui8temp & 0xFE; /* Set measurement bit in POWER_CTL register */
-   SPI_Write(POWER_CTL, ui8temp, 0x00, SPI_WRITE_ONE_REG); /* Write the new value to POWER_CTL register */
+   SPI_Write(FILTER, 0x08, 0x00, SPI_WRITE_ONE_REG); //Set ADXL355 work in 15.625 Hz output data rate
+
+   uint8_t ui8temp = (uint8_t)SPI_Read(POWER_CTL, SPI_READ_ONE_REG); /* Read POWER_CTL register, before modifying it */
+   ui8temp = ui8temp & 0xFE;                                         /* Set measurement bit in POWER_CTL register */
+   SPI_Write(POWER_CTL, ui8temp, 0x00, SPI_WRITE_ONE_REG);           /* Write the new value to POWER_CTL register */
 }
 
 /**
@@ -119,9 +121,9 @@ void ADXL355_Start_Sensor(void)
 **/
 void ADXL355_Stop_Sensor(void)
 {
-   uint8_t ui8temp= (uint8_t)SPI_Read(POWER_CTL, SPI_READ_ONE_REG); /*Read POWER_CTL register, before modifying it */
-   ui8temp = ui8temp | 0x01; /* Clear measurement bit in POWER_CTL register */
-   SPI_Write(POWER_CTL, ui8temp, 0x00, SPI_WRITE_ONE_REG); /* Write the new value to POWER_CTL register */
+   uint8_t ui8temp = (uint8_t)SPI_Read(POWER_CTL, SPI_READ_ONE_REG); /*Read POWER_CTL register, before modifying it */
+   ui8temp = ui8temp | 0x01;                                         /* Clear measurement bit in POWER_CTL register */
+   SPI_Write(POWER_CTL, ui8temp, 0x00, SPI_WRITE_ONE_REG);           /* Write the new value to POWER_CTL register */
 }
 
 /**
