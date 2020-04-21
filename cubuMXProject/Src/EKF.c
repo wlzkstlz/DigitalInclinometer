@@ -5,16 +5,24 @@ float gG;        //Earth Gravity
 float gX_hat[2]; //State Variable:pitch and roll angel. unit: rad
 float gX_bar[2];
 
-float gP_hat[2][2] = {{0.1, 0}, {0, 0.1}}; //State CovMetrix;
+float gP_hat[2][2] = {{DEG2RAD(1.0) * DEG2RAD(1.0), 0},
+                      {0, DEG2RAD(1.0) * DEG2RAD(1.0)}}; //State CovMetrix;
 float gP_bar[2][2];
 
-const float gF[2][2] = {{1, 0}, {0, 1}};
-const float R[2][2] = {{0.1, 0}, {0, 0.1}};
+//const float gF[2][2] = {{1, 0}, {0, 1}};
 float gH[3][2];
 
-float gK[2][3];
+const float gR[2][2] = {{DEG2RAD(0.5) * DEG2RAD(0.5), 0},
+                        {0, DEG2RAD(0.5) * DEG2RAD(0.5)}};
 
-const float gQ[3][3] = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+#define _IMU_ACC_VAR_ ((7.9e-5 * 9.8) * (7.9e-5 * 9.8))
+const float gQ[3][3] = {{_IMU_ACC_VAR_, 0, 0},
+                        {0, _IMU_ACC_VAR_, 0},
+                        {0, 0, _IMU_ACC_VAR_}}; //IMU parameter
+
+float gK[2][3]; //kalman Gain
+
+float gErr[3][1];
 
 void EKFInit(const float acc[3])
 {
@@ -22,33 +30,27 @@ void EKFInit(const float acc[3])
     CalAngelFromAcc(acc, gX_hat);
 }
 
-void EKFPredict()
+void EKFPredict(void)
 {
-    AddMetrix(&gP_hat[0][0], &R[0][0], &gP_bar[0][0], 2, 2);
+    AddMetrix(&gP_hat[0][0], &gR[0][0], &gP_bar[0][0], 2, 2);
 
     for (int i = 0; i < 2; i++)
-        gX_bar[i] = gX_hat[i]; //认为角度不变
+        gX_bar[i] = gX_hat[i]; //角度不变假设
 }
 
 void EKFMeasure(const float ax, const float ay, const float az)
 {
-    float acc[3];
-    acc[0] = ax;
-    acc[1] = ay;
-    acc[2] = az;
+    float acc_measure[3];
+    acc_measure[0] = ax;
+    acc_measure[1] = ay;
+    acc_measure[2] = az;
 
     CalHMetrix();
     CalKMetrix();
-
-    float acc_[3];
-    CalAccFromAngel(gX_bar, acc_);
-
-    float err[3][1];
-    for (int i = 0; i < 3; i++)
-        err[i][0] = acc[i] - acc_[i];
+    CalErr(acc_measure);
 
     float tmp1[2][1];
-    MulMetrix(&gK[0][0], &err[0][0], &tmp1[0][0], 2, 3, 1);
+    MulMetrix(&gK[0][0], &gErr[0][0], &tmp1[0][0], 2, 3, 1);
 
     for (int i = 0; i < 2; i++)
     {
@@ -58,7 +60,7 @@ void EKFMeasure(const float ax, const float ay, const float az)
     CalPhatMetrix();
 }
 
-void CalHMetrix()
+void CalHMetrix(void)
 {
     gH[0][0] = -cos(gX_bar[0]) * gG;
     gH[0][1] = 0;
@@ -68,7 +70,7 @@ void CalHMetrix()
     gH[2][1] = -sin(gX_bar[1]) * cos(gX_bar[0]) * gG;
 }
 
-void CalKMetrix()
+void CalKMetrix(void)
 {
     float h_t[2][3];
     TransposeMetrix(&gH[0][0], &h_t[0][0], 3, 2);
@@ -90,7 +92,16 @@ void CalKMetrix()
     MulMetrix(&tmp1[0][0], &tmp4[0][0], &gK[0][0], 2, 3, 3);
 }
 
-void CalPhatMetrix()
+void CalErr(float measure[3])
+{
+    float acc_predict[3];
+    CalAccFromAngel(gX_bar, acc_predict);
+
+    for (int i = 0; i < 3; i++)
+        gErr[i][0] = measure[i] - acc_predict[i];
+}
+
+void CalPhatMetrix(void)
 {
     float tmp1[2][2];
     MulMetrix(&gK[0][0], &gH[0][0], &tmp1[0][0], 2, 3, 2);

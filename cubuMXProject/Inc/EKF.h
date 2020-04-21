@@ -1,17 +1,24 @@
 #ifndef _EKF_H_
 #define _EKF_H_
 
+#define PI 3.1415926535897932385
+#define DEG2RAD(x) ((x) / 180.0 * PI)
+#define RAD2DEG(x) ((x) / PI * 180.0)
 
+extern float gX_hat[2];
+extern float gP_hat[2][2];
+extern float gErr[3][1];
 
 void EKFInit(const float acc[3]);
 
-void EKFPredict();
+void EKFPredict(void);
 
 void EKFMeasure(const float ax,const float ay,const float az);
 
-void CalHMetrix();
-void CalKMetrix();
-void CalPhatMetrix();
+void CalHMetrix(void);
+void CalKMetrix(void);
+void CalErr(float measure[3]);
+void CalPhatMetrix(void);
 
 void CalAngelFromAcc(const float acc[3], float angels[2]);
 void CalAccFromAngel(const float angels[2], float acc[3]);

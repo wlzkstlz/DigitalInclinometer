@@ -120,14 +120,14 @@ int main(void)
   for (int i = 0; i < avg_times; i++)
   {
     ADXL355_Data_Scan();
-    acc[0] += i32SensorX;
-    acc[1] += i32SensorY;
-    acc[2] += i32SensorZ;
+    acc[0] += i32SensorX / ADXL_SENSITIVITY;
+    acc[1] += i32SensorY / ADXL_SENSITIVITY;
+    acc[2] += i32SensorZ / ADXL_SENSITIVITY;
   }
 
   for (int i = 0; i < 3; i++)
   {
-    acc[i]=acc[i]/avg_times;
+    acc[i] = acc[i] / avg_times;
   }
   EKFInit(acc);
 
@@ -148,7 +148,7 @@ int main(void)
 
     ADXL355_Data_Scan();
     EKFPredict();
-    EKFMeasure(i32SensorX, i32SensorY, i32SensorZ);
+    EKFMeasure(i32SensorX / ADXL_SENSITIVITY, i32SensorY / ADXL_SENSITIVITY, i32SensorZ / ADXL_SENSITIVITY);
 
     /* USER CODE END WHILE */
 
