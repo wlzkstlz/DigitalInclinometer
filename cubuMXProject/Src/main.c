@@ -54,17 +54,19 @@
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 /***********************¡¾Debug Info¡¿**************************/
-void send_debug_info_pwm_w(int32_t x, int32_t y, int32_t z)
+void send_debug_info(float pitch, float roll, float err_x, float err_y, float err_z)
 {
-  const size_t data_length = 1 + 3 * sizeof(int32_t) + 2;
+  const size_t data_length = 1 + 5 * sizeof(float) + 2;
   uint8_t data[data_length];
   data[0] = 0xa5;
   data[data_length - 2] = 0;
   data[data_length - 1] = 0x5a;
 
-  memcpy(data + 1, (uint8_t *)(&x), sizeof(int32_t));
-  memcpy(data + 1 + 1 * sizeof(int32_t), (uint8_t *)(&y), sizeof(int32_t));
-  memcpy(data + 1 + 2 * sizeof(int32_t), (uint8_t *)(&z), sizeof(int32_t));
+  memcpy(data + 1 + 0 * sizeof(float), (uint8_t *)(&pitch), sizeof(float));
+  memcpy(data + 1 + 1 * sizeof(float), (uint8_t *)(&roll), sizeof(float));
+  memcpy(data + 1 + 2 * sizeof(float), (uint8_t *)(&err_x), sizeof(float));
+  memcpy(data + 1 + 3 * sizeof(float), (uint8_t *)(&err_y), sizeof(float));
+  memcpy(data + 1 + 4 * sizeof(float), (uint8_t *)(&err_z), sizeof(float));
 
   for (size_t i = 1; i < data_length - 2; i++)
   {
@@ -149,6 +151,7 @@ int main(void)
     ADXL355_Data_Scan();
     EKFPredict();
     EKFMeasure(i32SensorX / ADXL_SENSITIVITY, i32SensorY / ADXL_SENSITIVITY, i32SensorZ / ADXL_SENSITIVITY);
+    send_debug_info(gX_hat[0], gX_hat[1], gErr[0][0], gErr[1][0], gErr[2][0]);
 
     /* USER CODE END WHILE */
 
