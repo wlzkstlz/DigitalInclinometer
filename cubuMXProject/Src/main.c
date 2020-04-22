@@ -142,16 +142,16 @@ int main(void)
   while (1)
   {
     i++;
-    HAL_Delay(1);
-    if (i % 100 == 50)
+    HAL_Delay(10);
+    if (i % 10 == 5)
       HAL_GPIO_WritePin(GPIOA, LED1_Pin, GPIO_PIN_SET);
-    else if (i % 100 == 0)
+    else if (i % 10 == 0)
       HAL_GPIO_WritePin(GPIOA, LED1_Pin, GPIO_PIN_RESET);
 
     // ADXL355_Data_Scan();
     // EKFPredict();
     // EKFMeasure(i32SensorX / ADXL_SENSITIVITY, i32SensorY / ADXL_SENSITIVITY, i32SensorZ / ADXL_SENSITIVITY);
-    send_debug_info(gX_hat[0], gX_hat[1], gErr[0][0], gErr[1][0], gErr[2][0]);
+    send_debug_info(RAD2DEG(gX_hat[0]), RAD2DEG(gX_hat[1]), gErr[0][0], gErr[1][0], gErr[2][0]);
 
     /* USER CODE END WHILE */
 

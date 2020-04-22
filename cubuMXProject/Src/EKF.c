@@ -12,10 +12,10 @@ float gP_bar[2][2];
 //const float gF[2][2] = {{1, 0}, {0, 1}};
 float gH[3][2];
 
-const float gR[2][2] = {{DEG2RAD(0.5) * DEG2RAD(0.5), 0},
-                        {0, DEG2RAD(0.5) * DEG2RAD(0.5)}};
+const float gR[2][2] = {{DEG2RAD(0.01) * DEG2RAD(0.01), 0},
+                        {0, DEG2RAD(0.01) * DEG2RAD(0.01)}};
 
-#define _IMU_ACC_VAR_ ((7.9e-5 * 9.8) * (7.9e-5 * 9.8)) // at 10Hz
+#define _IMU_ACC_VAR_ (10*(7.9e-5 * 9.8) * (7.9e-5 * 9.8)) // at 10Hz
 const float gQ[3][3] = {{_IMU_ACC_VAR_, 0, 0},
                         {0, _IMU_ACC_VAR_, 0},
                         {0, 0, _IMU_ACC_VAR_}}; //IMU parameter

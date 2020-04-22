@@ -98,7 +98,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Accelerometer parameters */
 #define ADXL_RANGE     2     /* ADXL362 sensitivity: 2, 4, 8 [g] */
 
-#define ADXL_SENSITIVITY  256000.0 /* LSB/g */
+#define ADXL_SENSITIVITY  (256000.0/9.8) /* LSB/(m/s^2) */
 
 #define ACT_VALUE          50     /* Activity threshold value */
 
