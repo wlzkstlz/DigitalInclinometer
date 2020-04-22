@@ -106,7 +106,7 @@ void ADXL355_Init(void)
 **/
 void ADXL355_Start_Sensor(void)
 {
-   SPI_Write(FILTER, 0x08, 0x00, SPI_WRITE_ONE_REG); //Set ADXL355 work in 15.625 Hz output data rate
+   SPI_Write(FILTER, 0x09, 0x00, SPI_WRITE_ONE_REG); //Set ADXL355 work in 7.813 Hz output data rate
 
    uint8_t ui8temp = (uint8_t)SPI_Read(POWER_CTL, SPI_READ_ONE_REG); /* Read POWER_CTL register, before modifying it */
    ui8temp = ui8temp & 0xFE;                                         /* Set measurement bit in POWER_CTL register */

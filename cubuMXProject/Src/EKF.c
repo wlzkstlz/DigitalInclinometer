@@ -5,8 +5,9 @@ float gG;        //Earth Gravity
 float gX_hat[2]; //State Variable:pitch and roll angel. unit: rad
 float gX_bar[2];
 
-float gP_hat[2][2] = {{DEG2RAD(1.0) * DEG2RAD(1.0), 0},
-                      {0, DEG2RAD(1.0) * DEG2RAD(1.0)}}; //State CovMetrix;
+// float gP_hat[2][2] = {{DEG2RAD(1.0) * DEG2RAD(1.0), 0},
+//                       {0, DEG2RAD(1.0) * DEG2RAD(1.0)}}; //State CovMetrix;
+float gP_hat[2][2]; //State CovMetrix;
 float gP_bar[2][2];
 
 //const float gF[2][2] = {{1, 0}, {0, 1}};
@@ -15,7 +16,7 @@ float gH[3][2];
 const float gR[2][2] = {{DEG2RAD(0.01) * DEG2RAD(0.01), 0},
                         {0, DEG2RAD(0.01) * DEG2RAD(0.01)}};
 
-#define _IMU_ACC_VAR_ (10*(7.9e-5 * 9.8) * (7.9e-5 * 9.8)) // at 10Hz
+#define _IMU_ACC_VAR_ (1.0 * (6.988e-5 * 9.8) * (6.988e-5 * 9.8)) // at 10Hz
 const float gQ[3][3] = {{_IMU_ACC_VAR_, 0, 0},
                         {0, _IMU_ACC_VAR_, 0},
                         {0, 0, _IMU_ACC_VAR_}}; //IMU parameter
@@ -29,6 +30,12 @@ void EKFInit(const float acc[3])
 {
     gG = sqrt(acc[0] * acc[0] + acc[1] * acc[1] + acc[2] * acc[2]);
     CalAngelFromAcc(acc, gX_hat);
+
+    gP_hat[0][0] = DEG2RAD(1.0) * DEG2RAD(1.0);
+    gP_hat[1][1] = DEG2RAD(1.0) * DEG2RAD(1.0);
+    gP_hat[0][1] = 0.f;
+    gP_hat[1][0] = 0.f;
+
     gbEKFInited = 1;
 }
 
@@ -44,12 +51,23 @@ void EKFPredict(void)
 
 void EKFMeasure(const float ax, const float ay, const float az)
 {
-    if (0 == gbEKFInited)
-        return;
     float acc_measure[3];
     acc_measure[0] = ax;
     acc_measure[1] = ay;
     acc_measure[2] = az;
+
+    float raw_angels[2];
+    CalAngelFromAcc(acc_measure, raw_angels);
+    if (fabs(raw_angels[0]) > DEG2RAD(10.f) || fabs(raw_angels[1] > DEG2RAD(10.f))) //超出量程则重新初始化
+        gbEKFInited = 0;
+
+    if (0 == gbEKFInited)
+    {
+        EKFInit(acc_measure);
+        return;
+    }
+
+    UpdateG(acc_measure);
 
     CalHMetrix();
     CalKMetrix();
@@ -64,6 +82,13 @@ void EKFMeasure(const float ax, const float ay, const float az)
     }
 
     CalPhatMetrix();
+}
+
+void UpdateG(float measure[3])
+{
+    float new_g = sqrt(measure[0] * measure[0] + measure[1] * measure[1] + measure[2] * measure[2]);
+    // gG = 0.7 * gG + 0.3 * new_g;
+    gG = new_g;
 }
 
 void CalHMetrix(void)

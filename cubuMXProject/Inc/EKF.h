@@ -20,6 +20,8 @@ void CalKMetrix(void);
 void CalErr(float measure[3]);
 void CalPhatMetrix(void);
 
+void UpdateG(float measure[3]);
+
 void CalAngelFromAcc(const float acc[3], float angels[2]);
 void CalAccFromAngel(const float angels[2], float acc[3]);
 

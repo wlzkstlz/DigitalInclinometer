@@ -47,16 +47,16 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint32_t dTime = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 /***********************¡¾Debug Info¡¿**************************/
-void send_debug_info(float pitch, float roll, float err_x, float err_y, float err_z)
+void send_debug_info(float pitch, float roll, float err_x, float err_y, float err_z, float dtime)
 {
-  const size_t data_length = 1 + 5 * sizeof(float) + 2;
+  const size_t data_length = 1 + 6 * sizeof(float) + 2;
   uint8_t data[data_length];
   data[0] = 0xa5;
   data[data_length - 2] = 0;
@@ -67,6 +67,7 @@ void send_debug_info(float pitch, float roll, float err_x, float err_y, float er
   memcpy(data + 1 + 2 * sizeof(float), (uint8_t *)(&err_x), sizeof(float));
   memcpy(data + 1 + 3 * sizeof(float), (uint8_t *)(&err_y), sizeof(float));
   memcpy(data + 1 + 4 * sizeof(float), (uint8_t *)(&err_z), sizeof(float));
+  memcpy(data + 1 + 5 * sizeof(float), (uint8_t *)(&dtime), sizeof(float));
 
   for (size_t i = 1; i < data_length - 2; i++)
   {
@@ -151,7 +152,7 @@ int main(void)
     // ADXL355_Data_Scan();
     // EKFPredict();
     // EKFMeasure(i32SensorX / ADXL_SENSITIVITY, i32SensorY / ADXL_SENSITIVITY, i32SensorZ / ADXL_SENSITIVITY);
-    send_debug_info(RAD2DEG(gX_hat[0]), RAD2DEG(gX_hat[1]), gErr[0][0], gErr[1][0], gErr[2][0]);
+    send_debug_info(RAD2DEG(gX_hat[0]), RAD2DEG(gX_hat[1]), gErr[0][0], gErr[1][0], gErr[2][0], dTime);
 
     /* USER CODE END WHILE */
 
@@ -201,6 +202,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   if (GPIO_Pin == IMU_DRDYP_Pin)
   {
+    static uint32_t pre_tick = 0;
+    uint32_t cur_tick = HAL_GetTick();
+    dTime = cur_tick - pre_tick;
+    pre_tick = cur_tick;
     ADXL355_Data_Scan();
     EKFPredict();
     EKFMeasure(i32SensorX / ADXL_SENSITIVITY, i32SensorY / ADXL_SENSITIVITY, i32SensorZ / ADXL_SENSITIVITY);
