@@ -48,6 +48,7 @@
 
 /* USER CODE BEGIN PV */
 uint32_t dTime = 0;
+uint8_t gb_calibrate_zero = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -143,7 +144,7 @@ int main(void)
   while (1)
   {
     i++;
-    HAL_Delay(10);
+    HAL_Delay(5);
     if (i % 10 == 5)
       HAL_GPIO_WritePin(GPIOA, LED1_Pin, GPIO_PIN_SET);
     else if (i % 10 == 0)
@@ -153,6 +154,17 @@ int main(void)
     // EKFPredict();
     // EKFMeasure(i32SensorX / ADXL_SENSITIVITY, i32SensorY / ADXL_SENSITIVITY, i32SensorZ / ADXL_SENSITIVITY);
     send_debug_info(RAD2DEG(gX_hat[0]), RAD2DEG(gX_hat[1]), gErr[0][0], gErr[1][0], gErr[2][0], dTime);
+
+    //接收处理校零指令
+    uint8_t received_data[4];
+    HAL_StatusTypeDef ret = HAL_UART_Receive(&huart1, received_data, 4, 10);
+    if (ret == HAL_OK && gb_calibrate_zero == 0)
+    {
+      if (received_data[0] == 0xa5 && received_data[3] == 0x5a && received_data[1] == received_data[2])
+      {
+        gb_calibrate_zero = received_data[1];
+      }
+    }
 
     /* USER CODE END WHILE */
 
@@ -207,6 +219,31 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     dTime = cur_tick - pre_tick;
     pre_tick = cur_tick;
     ADXL355_Data_Scan();
+
+    // 缓存最近3s的加速度数据，为校零做准备
+    uint32_t idx = calibrate_buffer_id % CALIB_BUFFER_SIZE;
+    acc_calibrate_buffer[0][idx] = i32SensorX;
+    acc_calibrate_buffer[1][idx] = i32SensorY;
+    acc_calibrate_buffer[2][idx] = i32SensorZ;
+    calibrate_buffer_id++;
+    if (calibrate_buffer_id >= CALIB_BUFFER_SIZE && gb_calibrate_zero)
+    {
+      int64_t acc_sums[3] = {0};
+      double gg = 0;
+      for (int i = 0; i < 3; i++)
+      {
+        for (int j = 0; j < CALIB_BUFFER_SIZE; j++)
+        {
+          acc_sums[i] += acc_calibrate_buffer[i][j];
+        }
+        acc_sums[i] /= CALIB_BUFFER_SIZE;
+        g_acc_offsets[i] = acc_sums[i] / ADXL_SENSITIVITY;
+        gg += g_acc_offsets[i] * g_acc_offsets[i];
+      }
+      gG = sqrt(gg);
+      gb_calibrate_zero = 0;
+    }
+
     EKFPredict();
     EKFMeasure(i32SensorX / ADXL_SENSITIVITY, i32SensorY / ADXL_SENSITIVITY, i32SensorZ / ADXL_SENSITIVITY);
   }

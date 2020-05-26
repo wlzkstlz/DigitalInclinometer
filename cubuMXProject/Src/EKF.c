@@ -5,6 +5,11 @@ float gG;        //Earth Gravity
 float gX_hat[2]; //State Variable:pitch and roll angel. unit: rad
 float gX_bar[2];
 
+// for calibration
+int32_t acc_calibrate_buffer[3][CALIB_BUFFER_SIZE];
+uint32_t calibrate_buffer_id = 0;
+float g_acc_offsets[3] = {0};
+
 // float gP_hat[2][2] = {{DEG2RAD(1.0) * DEG2RAD(1.0), 0},
 //                       {0, DEG2RAD(1.0) * DEG2RAD(1.0)}}; //State CovMetrix;
 float gP_hat[2][2]; //State CovMetrix;
@@ -28,7 +33,8 @@ float gErr[3][1];
 unsigned char gbEKFInited = 0;
 void EKFInit(const float acc[3])
 {
-    gG = sqrt(acc[0] * acc[0] + acc[1] * acc[1] + acc[2] * acc[2]);
+    if (gG < 5) //重力加速度未初始化
+        gG = sqrt(acc[0] * acc[0] + acc[1] * acc[1] + acc[2] * acc[2]);
     CalAngelFromAcc(acc, gX_hat);
 
     gP_hat[0][0] = DEG2RAD(1.0) * DEG2RAD(1.0);
@@ -52,8 +58,8 @@ void EKFPredict(void)
 void EKFMeasure(const float ax, const float ay, const float az)
 {
     float acc_measure[3];
-    acc_measure[0] = ax;
-    acc_measure[1] = ay;
+    acc_measure[0] = ax - g_acc_offsets[0];
+    acc_measure[1] = ay - g_acc_offsets[1];
     acc_measure[2] = az;
 
     float raw_angels[2];
@@ -67,7 +73,7 @@ void EKFMeasure(const float ax, const float ay, const float az)
         return;
     }
 
-    UpdateG(acc_measure);
+    //UpdateG(acc_measure);
 
     CalHMetrix();
     CalKMetrix();

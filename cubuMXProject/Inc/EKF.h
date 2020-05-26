@@ -1,6 +1,8 @@
 #ifndef _EKF_H_
 #define _EKF_H_
 
+#include <stdint.h>
+
 #define PI 3.1415926535897932385
 #define DEG2RAD(x) ((x) / 180.0 * PI)
 #define RAD2DEG(x) ((x) / PI * 180.0)
@@ -8,6 +10,13 @@
 extern float gX_hat[2];
 extern float gP_hat[2][2];
 extern float gErr[3][1];
+
+// for calibration
+#define CALIB_BUFFER_SIZE  30 // 对应约3s时间
+extern int32_t acc_calibrate_buffer[3][CALIB_BUFFER_SIZE];
+extern uint32_t calibrate_buffer_id;
+extern float gG;
+extern float g_acc_offsets[3];
 
 void EKFInit(const float acc[3]);
 
