@@ -55,7 +55,7 @@ void EKFPredict(void)
         gX_bar[i] = gX_hat[i]; //角度不变假设
 }
 
-void EKFMeasure(const float ax, const float ay, const float az)
+void EKFMeasure(float ax, float ay, float az)
 {
     float acc_measure[3];
     acc_measure[0] = ax - g_acc_offsets[0];

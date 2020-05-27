@@ -18,11 +18,13 @@ extern uint32_t calibrate_buffer_id;
 extern float gG;
 extern float g_acc_offsets[3];
 
+extern unsigned char gbEKFInited;
+
 void EKFInit(const float acc[3]);
 
 void EKFPredict(void);
 
-void EKFMeasure(const float ax,const float ay,const float az);
+void EKFMeasure(float ax,float ay,float az);
 
 void CalHMetrix(void);
 void CalKMetrix(void);

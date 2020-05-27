@@ -242,6 +242,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
       }
       gG = sqrt(gg);
       gb_calibrate_zero = 0;
+			gbEKFInited = 0;
+			return;
     }
 
     EKFPredict();
